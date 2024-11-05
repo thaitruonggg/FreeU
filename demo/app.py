@@ -11,8 +11,8 @@ from free_lunch_utils import register_free_upblock2d, register_free_crossattn_up
 #pip_2_1 = pip_2_1.to("cuda")
 
 model_id = "stabilityai/stable-diffusion-xl-base-1.0"
-pip_1_4 = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
-pip_1_4 = pip_1_4.to("cuda")
+pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+pip_2_1 = pip_2_1.to("cuda")
 
 prompt_prev = None
 sd_options_prev = None
@@ -32,7 +32,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     # else:
     #     pip = pip_1_4
 
-    pip = pip_1_4
+    pip = pip_2_1
 
     run_baseline = False
     if prompt != prompt_prev or sd_options != sd_options_prev or seed != seed_prev:
@@ -158,7 +158,7 @@ with block:
     
     with gr.Group():
         with gr.Row():
-            with gr.Accordion('FreeU Parameters (feel free to adjust these parameters based on your prompt): ', open=False):
+            with gr.Accordion('FreeU Parameters (feel free to adjust these parameters based on your prompt): ', open=True):
                 with gr.Row():
                     b1 = gr.Slider(label='b1: backbone factor of the first stage block of decoder',
                                             minimum=1,
