@@ -207,5 +207,7 @@ with block:
     text.submit(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2])
     btn.click(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2])
 
-block.launch()
+#block.launch()
 # block.queue(default_enabled=False).launch(share=False)
+block.launch(share=True)
+#block.queue(default_enabled=False).launch(share=True)
