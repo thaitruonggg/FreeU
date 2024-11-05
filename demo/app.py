@@ -159,23 +159,23 @@ with block:
                 with gr.Row():
                     b1 = gr.Slider(label='b1: backbone factor of the first stage block of decoder',
                                             minimum=1,
-                                            maximum=1.6,
+                                            maximum=10,
                                             step=0.01,
                                             value=1.1)
                     b2 = gr.Slider(label='b2: backbone factor of the second stage block of decoder',
                                             minimum=1,
-                                            maximum=1.6,
+                                            maximum=10,
                                             step=0.01,
                                             value=1.2)
                 with gr.Row():
                     s1 = gr.Slider(label='s1: skip factor of the first stage block of decoder',
                                             minimum=0,
-                                            maximum=1,
+                                            maximum=10,
                                             step=0.1,
                                             value=0.2)
                     s2 = gr.Slider(label='s2: skip factor of the second stage block of decoder',
                                             minimum=0,
-                                            maximum=1,
+                                            maximum=10,
                                             step=0.1,
                                             value=0.2)    
                 
