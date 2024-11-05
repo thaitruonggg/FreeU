@@ -5,12 +5,14 @@ import torch
 from diffusers import StableDiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
-
-
 model_id = "stabilityai/stable-diffusion-2-1"
 # model_id = "./stable-diffusion-2-1"
 pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
 pip_2_1 = pip_2_1.to("cuda")
+
+model_id = "stabilityai/stable-diffusion-xl-base-1.0"
+pip_1_4 = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+pip_1_4 = pip_1_4.to("cuda")
 
 prompt_prev = None
 sd_options_prev = None
@@ -30,7 +32,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     # else:
     #     pip = pip_1_4
 
-    pip = pip_2_1
+    pip = pip_1_4
 
     run_baseline = False
     if prompt != prompt_prev or sd_options != sd_options_prev or seed != seed_prev:
@@ -132,10 +134,11 @@ h1 {
 
 block = gr.Blocks(css='style.css')
 
-options = ['SD2.1']
+#options = ['SD2.1']
+options = ['SDXL']
 
 with block:
-    gr.Markdown("# SD 2.1 vs. FreeU")
+    gr.Markdown("# SDXL vs. FreeU")
     with gr.Group():
         with gr.Row(elem_id="prompt-container").style(mobile_collapse=False, equal_height=True):
             with gr.Column():
