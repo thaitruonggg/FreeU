@@ -6,11 +6,8 @@ from diffusers import StableDiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
 #model_id = "stabilityai/stable-diffusion-2-1"
-## model_id = "./stable-diffusion-2-1"
-#pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
-#pip_2_1 = pip_2_1.to("cuda")
-
 model_id = "stabilityai/stable-diffusion-xl-base-1.0"
+# model_id = "./stable-diffusion-2-1"
 pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
 pip_2_1 = pip_2_1.to("cuda")
 
@@ -134,8 +131,8 @@ h1 {
 
 block = gr.Blocks(css='style.css')
 
-#options = ['SD2.1']
-options = ['SDXL']
+options = ['SD2.1']
+#options = ['SDXL']
 
 with block:
     gr.Markdown("# SDXL vs. FreeU")
