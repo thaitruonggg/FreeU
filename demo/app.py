@@ -209,5 +209,5 @@ with block:
 
 #block.launch()
 # block.queue(default_enabled=False).launch(share=False)
-block.launch(share=True)
+block.launch(share=True, debug=True)
 #block.queue(default_enabled=False).launch(share=True)
