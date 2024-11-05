@@ -131,8 +131,8 @@ h1 {
 
 block = gr.Blocks(css='style.css')
 
-options = ['SD2.1']
-#options = ['SDXL']
+#options = ['SD2.1']
+options = ['SDXL']
 
 with block:
     gr.Markdown("# SDXL vs. FreeU")
@@ -148,7 +148,8 @@ with block:
                     )
             btn = gr.Button("Generate image", scale=0)
         with gr.Row():             
-            sd_options = gr.Dropdown(["SD2.1"], label="SD options", value="SD2.1", visible=False)
+            #sd_options = gr.Dropdown(["SD2.1"], label="SD options", value="SD2.1", visible=False)
+            sd_options = gr.Dropdown(["SDXL"], label="SD options", value="SDXL", visible=True)
             
             
         
