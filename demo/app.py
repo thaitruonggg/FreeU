@@ -22,10 +22,10 @@ pip_2_1 = pip_2_1.to("cuda")
 #pip_3_5 = pip_3_5.to("cuda")
 
 #Link: https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0
-#model_id_xl = "stabilityai/stable-diffusion-xl-base-1.0"
+model_id_xl = "stabilityai/stable-diffusion-xl-base-1.0"
 #Link: https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0
-model_id_xl = "stabilityai/stable-diffusion-xl-refiner-1.0"
-pip_4_1 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16)
+#model_id_xl = "stabilityai/stable-diffusion-xl-refiner-1.0"
+pip_4_1 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16, variant="fp16", use_safetensors=True)
 pip_4_1 = pip_4_1.to("cuda")
 
 prompt_prev = None
