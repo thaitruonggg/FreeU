@@ -22,7 +22,9 @@ pip_2_1 = pip_2_1.to("cuda")
 #pip_3_5 = pip_3_5.to("cuda")
 
 #Link: https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0
-model_id_xl = "stabilityai/stable-diffusion-xl-base-1.0"
+#model_id_xl = "stabilityai/stable-diffusion-xl-base-1.0"
+#Link: https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0
+model_id_xl = "stabilityai/stable-diffusion-xl-refiner-1.0"
 pip_4_1 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16)
 pip_4_1 = pip_4_1.to("cuda")
 
@@ -51,8 +53,6 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
          pip = pip_2_1
     else:
          pip = pip_4_1
-
-    #pip = pip_2_1
 
     run_baseline = False
     if prompt != prompt_prev or sd_options != sd_options_prev or seed != seed_prev:
