@@ -23,18 +23,11 @@ pip_2_1 = pip_2_1.to("cuda")
 #pip_3_5 = StableDiffusionPipeline.from_pretrained(model_id_35, torch_dtype=torch.float16)
 #pip_3_5 = pip_3_5.to("cuda")
 
-#Link: https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0
-model_id_xl = "stabilityai/stable-diffusion-xl-base-1.0"
 #Link: https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0
-#model_id_xl = "stabilityai/stable-diffusion-xl-refiner-1.0"
-pip_4_1 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16, variant="fp16", use_safetensors=True)
-pip_4_1 = pip_4_1.to("cuda")
-
 base = DiffusionPipeline.from_pretrained(
     "stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, variant="fp16", use_safetensors=True
 )
 base.to("cuda")
-
 refiner = DiffusionPipeline.from_pretrained(
     "stabilityai/stable-diffusion-xl-refiner-1.0",
     text_encoder_2=base.text_encoder_2,
@@ -69,7 +62,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     elif sd_options == 'SD2.1':
          pip = pip_2_1
     else:
-         pip = base
+         pip = base #SDXL
 
     run_baseline = False
     if prompt != prompt_prev or sd_options != sd_options_prev or seed != seed_prev:
