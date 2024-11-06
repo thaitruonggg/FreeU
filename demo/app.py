@@ -18,7 +18,7 @@ pip_2_1 = pip_2_1.to("cuda")
 model_id_xl = "stabilityai/stable-diffusion-xl-refiner-1.0"
 # model_id = "./stable-diffusion-2-1"
 pip_4_1 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16)
-pip_4_1 = pip_2_1.to("cuda")
+pip_4_1 = pip_4_1.to("cuda")
 
 #model_id_xl = "stabilityai/sdxl-turbo"
 #pip_1_4 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16)
