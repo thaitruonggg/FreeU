@@ -5,8 +5,8 @@ import torch
 from diffusers import StableDiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
-#model_id = "stabilityai/stable-diffusion-2-1"
-model_id = "stabilityai/stable-diffusion-xl-base-1.0"
+model_id = "stabilityai/stable-diffusion-2-1"
+#model_id = "stabilityai/stable-diffusion-xl-base-1.0"
 # model_id = "./stable-diffusion-2-1"
 pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
 pip_2_1 = pip_2_1.to("cuda")
@@ -132,7 +132,7 @@ h1 {
 block = gr.Blocks(css='style.css')
 
 #options = ['SD2.1']
-options = ['SDXL']
+options = ['SDXL', 'SD2.1']
 
 with block:
     gr.Markdown("# SDXL vs. FreeU")
@@ -148,8 +148,8 @@ with block:
                     )
             btn = gr.Button("Generate image", scale=0)
         with gr.Row():             
-            #sd_options = gr.Dropdown(["SD2.1"], label="SD options", value="SD2.1", visible=False)
-            sd_options = gr.Dropdown(["SDXL"], label="SD options", value="SDXL", visible=True)
+            sd_options = gr.Dropdown(["SD2.1"], label="SD options", value="SD2.1", visible=True)
+            #sd_options = gr.Dropdown(["SDXL"], label="SD options", value="SDXL", visible=True)
             
             
         
