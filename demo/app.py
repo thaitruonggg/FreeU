@@ -5,24 +5,26 @@ import torch
 from diffusers import StableDiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
+#Link: https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5
 model_id_15 = "stable-diffusion-v1-5/stable-diffusion-v1-5"
-# model_id = "./stable-diffusion-2-1"
 pip_1_5 = StableDiffusionPipeline.from_pretrained(model_id_15, torch_dtype=torch.float16)
 pip_1_5 = pip_1_5.to("cuda")
 
+#Link: https://huggingface.co/stabilityai/stable-diffusion-2-1
 model_id_21 = "stabilityai/stable-diffusion-2-1"
 # model_id = "./stable-diffusion-2-1"
 pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id_21, torch_dtype=torch.float16)
 pip_2_1 = pip_2_1.to("cuda")
 
-model_id_35 = "stabilityai/stable-diffusion-3.5-large"
-# model_id = "./stable-diffusion-2-1"
-pip_3_5 = StableDiffusionPipeline.from_pretrained(model_id_35, torch_dtype=torch.float16)
-pip_3_5 = pip_3_5.to("cuda")
+#Link: https://huggingface.co/stabilityai/stable-diffusion-3.5-large
+#model_id_35 = "stabilityai/stable-diffusion-3.5-large"
+#pip_3_5 = StableDiffusionPipeline.from_pretrained(model_id_35, torch_dtype=torch.float16)
+#pip_3_5 = pip_3_5.to("cuda")
 
-#model_id_xl = "stabilityai/sdxl-turbo"
-#pip_1_4 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16)
-#pip_1_4 = pip_1_4.to("cuda")
+#Link: https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0
+model_id_xl = "stabilityai/stable-diffusion-xl-base-1.0"
+pip_4_1 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16)
+pip_4_1 = pip_4_1.to("cuda")
 
 prompt_prev = None
 sd_options_prev = None
@@ -48,7 +50,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     elif sd_options == 'SD2.1':
          pip = pip_2_1
     else:
-         pip = pip_3_5
+         pip = pip_4_1
 
     #pip = pip_2_1
 
@@ -186,7 +188,7 @@ with block:
                     )
             btn = gr.Button("Generate image", scale=0)
         with gr.Row():             
-            sd_options = gr.Dropdown(["SD1.5","SD2.1", "SD3.5"], label="SD options", value="SD2.1", visible=True)
+            sd_options = gr.Dropdown(["SD1.5","SD2.1","SD3.5","SDXL"], label="SD options", value="SD2.1", visible=True)
         
     
     with gr.Group():
