@@ -3,6 +3,7 @@ from PIL import Image
 import torch
 
 from diffusers import StableDiffusionPipeline
+from diffusers import DiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
 #Link: https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5
@@ -28,6 +29,21 @@ model_id_xl = "stabilityai/stable-diffusion-xl-base-1.0"
 pip_4_1 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16, variant="fp16", use_safetensors=True)
 pip_4_1 = pip_4_1.to("cuda")
 
+base = DiffusionPipeline.from_pretrained(
+    "stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, variant="fp16", use_safetensors=True
+)
+base.to("cuda")
+
+refiner = DiffusionPipeline.from_pretrained(
+    "stabilityai/stable-diffusion-xl-refiner-1.0",
+    text_encoder_2=base.text_encoder_2,
+    vae=base.vae,
+    torch_dtype=torch.float16,
+    use_safetensors=True,
+    variant="fp16",
+)
+refiner.to("cuda")
+
 prompt_prev = None
 sd_options_prev = None
 seed_prev = None 
@@ -52,7 +68,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     elif sd_options == 'SD2.1':
          pip = pip_2_1
     else:
-         pip = pip_4_1
+         pip = base
 
     run_baseline = False
     if prompt != prompt_prev or sd_options != sd_options_prev or seed != seed_prev:
@@ -67,7 +83,10 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
        
         torch.manual_seed(seed)
         print("Generating SD:")
-        sd_image = pip(prompt, num_inference_steps=25).images[0]  
+        sd_image = pip(prompt, num_inference_steps=25).images[0]
+        # Refine the image if using SDXL
+        if sd_options == 'SDXL':
+            sd_image = refiner(prompt, image=sd_image, num_inference_steps=25).images[0]
         sd_image_prev = sd_image
     else:
         sd_image = sd_image_prev
