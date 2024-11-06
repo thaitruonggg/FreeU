@@ -6,10 +6,13 @@ from diffusers import StableDiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
 model_id = "stabilityai/stable-diffusion-2-1"
-#model_id = "stabilityai/stable-diffusion-xl-base-1.0"
 # model_id = "./stable-diffusion-2-1"
 pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
 pip_2_1 = pip_2_1.to("cuda")
+
+model_id_xl = "stabilityai/stable-diffusion-xl-base-1.0"
+pip_1_4 = StableDiffusionPipeline.from_pretrained(model_id_xl, torch_dtype=torch.float16)
+pip_1_4 = pip_1_4.to("cuda")
 
 prompt_prev = None
 sd_options_prev = None
@@ -29,7 +32,13 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     # else:
     #     pip = pip_1_4
 
-    pip = pip_2_1
+    # Select the pipeline based on sd_options
+    if sd_options == 'SD2.1':
+        pip = pip_2_1
+    elif sd_options == 'SDXL':
+        pip = pip_1_4
+
+    #pip = pip_2_1
 
     run_baseline = False
     if prompt != prompt_prev or sd_options != sd_options_prev or seed != seed_prev:
@@ -132,8 +141,25 @@ h1 {
 block = gr.Blocks(css='style.css')
 
 #options = ['SD2.1']
-options = ['SDXL', 'SD2.1']
+options = ['SD2.1']
 
+#with block:
+    #gr.Markdown("# SDXL vs. FreeU")
+    #with gr.Group():
+        #with gr.Row(elem_id="prompt-container").style(mobile_collapse=False, equal_height=True):
+            #with gr.Column():
+                #text = gr.Textbox(
+                    #label="Enter your prompt",
+                    #show_label=False,
+                    #max_lines=1,
+                    #placeholder="Enter your prompt",
+                    #container=False,
+                    #)
+            #btn = gr.Button("Generate image", scale=0)
+        #with gr.Row():             
+            #sd_options = gr.Dropdown(["SD2.1"], label="SD options", value="SD2.1", visible=True)
+            #sd_options = gr.Dropdown(["SDXL"], label="SD options", value="SDXL", visible=True)
+            
 with block:
     gr.Markdown("# SDXL vs. FreeU")
     with gr.Group():
@@ -148,10 +174,7 @@ with block:
                     )
             btn = gr.Button("Generate image", scale=0)
         with gr.Row():             
-            sd_options = gr.Dropdown(["SD2.1"], label="SD options", value="SD2.1", visible=True)
-            #sd_options = gr.Dropdown(["SDXL"], label="SD options", value="SDXL", visible=True)
-            
-            
+            sd_options = gr.Dropdown(["SD2.1", "SDXL"], label="SD options", value="SD2.1", visible=True)         
         
     
     with gr.Group():
