@@ -7,6 +7,12 @@ from diffusers import StableDiffusionPipeline
 from diffusers import DiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
+#Link: https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5
+#model_id_15 = "stable-diffusion-v1-5/stable-diffusion-v1-5"
+# model_id = "./stable-diffusion-2-1"
+#pip_1_5 = StableDiffusionPipeline.from_pretrained(model_id_15, torch_dtype=torch.float16)
+#pip_1_5 = pip_1_5.to("cuda")
+
 #Link: https://huggingface.co/stabilityai/stable-diffusion-2-1
 model_id_21 = "stabilityai/stable-diffusion-2-1"
 # model_id = "./stable-diffusion-2-1"
