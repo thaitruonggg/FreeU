@@ -8,10 +8,10 @@ from diffusers import DiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
 #Link: https://huggingface.co/stabilityai/stable-diffusion-2-1
-model_id_21 = "stabilityai/stable-diffusion-2-1"
+#model_id_21 = "stabilityai/stable-diffusion-2-1"
 # model_id = "./stable-diffusion-2-1"
-pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id_21, torch_dtype=torch.float16)
-pip_2_1 = pip_2_1.to("cuda")
+#pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id_21, torch_dtype=torch.float16)
+#pip_2_1 = pip_2_1.to("cuda")
 
 #Link: https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0
 base = DiffusionPipeline.from_pretrained(
@@ -40,10 +40,12 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global sd_image_prev
 
     # Select the pipeline based on sd_options
-    if sd_options == 'SD2.1':
-         pip = pip_2_1
-    else:
-         pip = base #SDXL
+    #if sd_options == 'SD2.1':
+         #pip = pip_2_1
+    #else:
+         #pip = base #SDXL
+
+    pip = base
 
     run_baseline = False
     if prompt != prompt_prev or sd_options != sd_options_prev or seed != seed_prev:
