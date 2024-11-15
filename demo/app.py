@@ -3,7 +3,7 @@ from PIL import Image
 import torch
 torch.cuda.empty_cache()
 from diffusers import StableDiffusionPipeline
-from diffusers import DiffusionPipeline
+#from diffusers import DiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
 #Link: https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5
