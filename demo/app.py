@@ -13,7 +13,6 @@ pip_1_5 = pip_1_5.to("cuda")
 
 #Link: https://huggingface.co/stabilityai/stable-diffusion-2-1
 model_id_21 = "stabilityai/stable-diffusion-2-1"
-# model_id = "./stable-diffusion-2-1"
 pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id_21, torch_dtype=torch.float16)
 pip_2_1 = pip_2_1.to("cuda")
 
@@ -38,6 +37,7 @@ prompt_prev = None
 sd_options_prev = None
 seed_prev = None 
 sd_image_prev = None
+
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global prompt_prev
@@ -65,6 +65,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
         torch.manual_seed(seed)
         print("Generating SD:")
         sd_image = pip(prompt, num_inference_steps=25).images[0]
+        sd_image_prev = sd_image
         '''
         # Refine the image if using SDXL
         if sd_options == 'SDXL':
@@ -86,7 +87,6 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     images = [sd_image, freeu_image]
 
     return images
-
 
 examples = [
     [
@@ -155,8 +155,6 @@ h1 {
 """
 
 block = gr.Blocks(css='style.css')
-
-options = ['SD2.1']
             
 with block:
     gr.Markdown("# SD vs. FreeU")
