@@ -83,27 +83,12 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-
-    # Generate the latent representation instead of the final image
-    latents = pip.prepare_latents(
-        batch_size=1,  # Adjust based on your requirements
-        num_channels_latents=pip.unet.config.in_channels,
-        height=pip.unet.config.sample_size,
-        width=pip.unet.config.sample_size,
-        dtype=torch.float16,
-        device="cuda",
-        generator=None,  # Use a generator if needed
-        latents=None  # Pass None to generate new latents
-    )
-
-    # Optionally, you can decode the latents to get the image if needed
-    # image = pip.vae.decode(latents / pip.vae.config.scaling_factor, return_dict=False)[0]
-
-    # Return the latent representation and the generated images
+    feature_map = pip(prompt, num_inference_steps=25).images[0]
 
     # First SD, then freeu
-    images = [sd_image, None, latents]
+    images = [sd_image, freeu_image, feature_map]
 
+    #return images
     return images
 
 examples = [
@@ -233,14 +218,14 @@ with block:
 
         with gr.Group():
             with gr.Row():
-                with gr.Column() as c2:
+                with gr.Column() as c3:
                     image_3 = gr.Image(interactive=False)
-                    image_3_label = gr.Markdown("Latents")
+                    image_3_label = gr.Markdown("Feature Map")
             
         with gr.Group():
             # btn = gr.Button("Generate image", scale=0)
             with gr.Row():
-                with gr.Column() as c3:
+                with gr.Column() as c2:
                     image_2 = gr.Image(interactive=False)
                     image_2_label = gr.Markdown("FreeU")
 
