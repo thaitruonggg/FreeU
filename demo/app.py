@@ -83,9 +83,10 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
+    feature_map_image = pip(prompt, num_inference_steps=25).images[0]
 
     # First SD, then freeu
-    images = [sd_image, freeu_image]
+    images = [sd_image, freeu_image, feature_map_image]
 
     #return images
     return images
@@ -218,8 +219,8 @@ with block:
         with gr.Group():
             with gr.Row():
                 with gr.Column() as c3:
-                    feature_map_image = gr.Image(interactive=False)
-                    feature_map_label = gr.Markdown("Feature Map")
+                    image_3 = gr.Image(interactive=False)
+                    image_3_label = gr.Markdown("Feature Map")
             
         with gr.Group():
             # btn = gr.Button("Generate image", scale=0)
@@ -228,7 +229,7 @@ with block:
                     image_2 = gr.Image(interactive=False)
                     image_2_label = gr.Markdown("FreeU")
 
-    ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2], cache_examples=False)
+    ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_3, image_2], cache_examples=False)
     ex.dataset.headers = [""]
 
     text.submit(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2])
