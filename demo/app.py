@@ -65,8 +65,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
        
         torch.manual_seed(seed)
         print("Generating SD:")
-        #sd_image = pip(prompt, num_inference_steps=25).images[0]
-        sd_image, feature_map = pip(prompt, num_inference_steps=25)  # Modify this line to capture feature map
+        sd_image = pip(prompt, num_inference_steps=25).images[0]
         sd_image_prev = sd_image
         '''
         # Refine the image if using SDXL
@@ -83,30 +82,13 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
 
     torch.manual_seed(seed)
     print("Generating FreeU:")
-    #freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    freeu_image, feature_map = pip(prompt, num_inference_steps=25)  # Modify this line to capture feature map
-    feature_map = None
-
-    # Convert images to PIL format if they are not already
-    if isinstance(sd_image, np.ndarray):
-        sd_image = Image.fromarray(sd_image)
-    if isinstance(freeu_image, np.ndarray):
-        freeu_image = Image.fromarray(freeu_image)
-
-    # Handle feature map: Convert to image if possible or set to None
-    if feature_map is not None:
-        if isinstance(feature_map, np.ndarray):
-            feature_map_image = Image.fromarray(feature_map)
-        else:
-            feature_map_image = None  # Set to None if not a valid image
-    else:
-        feature_map_image = None
+    freeu_image = pip(prompt, num_inference_steps=25).images[0]
 
     # First SD, then freeu
     images = [sd_image, freeu_image]
 
     #return images
-    return images, feature_map_image  # Return the feature map along with images
+    return images
 
 examples = [
     [
@@ -232,6 +214,12 @@ with block:
                 with gr.Column() as c1:
                     image_1 = gr.Image(interactive=False)
                     image_1_label = gr.Markdown("SD")
+
+        with gr.Group():
+            with gr.Row():
+                with gr.Column() as c3:
+                    feature_map_image = gr.Image(interactive=False)  # New component for feature map
+                    feature_map_label = gr.Markdown("Feature Map")
             
         with gr.Group():
             # btn = gr.Button("Generate image", scale=0)
@@ -239,16 +227,8 @@ with block:
                 with gr.Column() as c2:
                     image_2 = gr.Image(interactive=False)
                     image_2_label = gr.Markdown("FreeU")
-        
-        with gr.Group():
-            with gr.Row():
-                with gr.Column() as c3:
-                    feature_map_image = gr.Image(interactive=False)  # New component for feature map
-                    feature_map_label = gr.Markdown("Feature Map")
-        
-        
-    #ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2], cache_examples=False)
-    ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, feature_map_image], cache_examples=False)
+
+    ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2], cache_examples=False)
     ex.dataset.headers = [""]
 
     text.submit(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2])
