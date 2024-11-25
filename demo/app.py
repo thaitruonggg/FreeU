@@ -218,7 +218,7 @@ with block:
         with gr.Group():
             with gr.Row():
                 with gr.Column() as c3:
-                    feature_map_image = gr.Image(interactive=False)  # New component for feature map
+                    feature_map_image = gr.Image(interactive=False)
                     feature_map_label = gr.Markdown("Feature Map")
             
         with gr.Group():
