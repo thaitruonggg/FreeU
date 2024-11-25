@@ -83,10 +83,10 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    feature_map_image = pip(prompt, num_inference_steps=25).images[0]
+    feature_map = pip(prompt, num_inference_steps=25).images[0]
 
     # First SD, then freeu
-    images = [sd_image, freeu_image, feature_map_image]
+    images = [sd_image, freeu_image, feature_map]
 
     #return images
     return images
@@ -232,8 +232,8 @@ with block:
     ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_3, image_2], cache_examples=False)
     ex.dataset.headers = [""]
 
-    text.submit(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2])
-    btn.click(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2])
+    text.submit(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_3, image_2])
+    btn.click(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_3, image_2])
 
 # block.launch()
 # block.queue(default_enabled=False).launch(share=False)
