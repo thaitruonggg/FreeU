@@ -84,7 +84,8 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     print("Generating FreeU:")
     #freeu_image = pip(prompt, num_inference_steps=25).images[0]
     freeu_image, feature_map = pip(prompt, num_inference_steps=25)  # Modify this line to capture feature map
-
+    feature_map = None
+    
     # First SD, then freeu
     images = [sd_image, freeu_image]
 
