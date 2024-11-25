@@ -83,12 +83,15 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    feature_map = pip(prompt, num_inference_steps=25).images[0]
+    # Get the feature map
+    feature_map = pip.visualize_feature_maps(sd_image, layer_name="image_encoder", num_images=1)
+
+    # Convert the feature map to an image format suitable for Gradio
+    feature_map_image = feature_map[0]  # Assuming visualize_feature_maps returns a list of images
 
     # First SD, then freeu
-    images = [sd_image, freeu_image, feature_map]
+    images = [sd_image, freeu_image, feature_map_image]
 
-    #return images
     return images
 
 examples = [
