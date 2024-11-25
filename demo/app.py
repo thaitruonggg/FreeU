@@ -102,7 +102,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     # Return the latent representation and the generated images
 
     # First SD, then freeu
-    images = [sd_image, freeu_image, latents]
+    images = [sd_image, None, latents]
 
     return images
 
