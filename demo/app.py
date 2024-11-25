@@ -1,4 +1,5 @@
 import gradio as gr
+import numpy as np
 from PIL import Image  
 import torch
 torch.cuda.empty_cache()
@@ -85,12 +86,27 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     #freeu_image = pip(prompt, num_inference_steps=25).images[0]
     freeu_image, feature_map = pip(prompt, num_inference_steps=25)  # Modify this line to capture feature map
     feature_map = None
-    
+
+    # Convert images to PIL format if they are not already
+    if isinstance(sd_image, np.ndarray):
+        sd_image = Image.fromarray(sd_image)
+    if isinstance(freeu_image, np.ndarray):
+        freeu_image = Image.fromarray(freeu_image)
+
+    # Handle feature map: Convert to image if possible or set to None
+    if feature_map is not None:
+        if isinstance(feature_map, np.ndarray):
+            feature_map_image = Image.fromarray(feature_map)
+        else:
+            feature_map_image = None  # Set to None if not a valid image
+    else:
+        feature_map_image = None
+
     # First SD, then freeu
     images = [sd_image, freeu_image]
 
     #return images
-    return images, feature_map  # Return the feature map along with images
+    return images, feature_map_image  # Return the feature map along with images
 
 examples = [
     [
