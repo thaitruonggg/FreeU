@@ -64,7 +64,8 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
        
         torch.manual_seed(seed)
         print("Generating SD:")
-        sd_image = pip(prompt, num_inference_steps=25).images[0]
+        #sd_image = pip(prompt, num_inference_steps=25).images[0]
+        sd_image, feature_map = pip(prompt, num_inference_steps=25)  # Modify this line to capture feature map
         sd_image_prev = sd_image
         '''
         # Refine the image if using SDXL
@@ -81,12 +82,14 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
 
     torch.manual_seed(seed)
     print("Generating FreeU:")
-    freeu_image = pip(prompt, num_inference_steps=25).images[0]  
+    #freeu_image = pip(prompt, num_inference_steps=25).images[0]
+    freeu_image, feature_map = pip(prompt, num_inference_steps=25)  # Modify this line to capture feature map
 
     # First SD, then freeu
     images = [sd_image, freeu_image]
 
-    return images
+    #return images
+    return images, feature_map  # Return the feature map along with images
 
 examples = [
     [
@@ -220,8 +223,15 @@ with block:
                     image_2 = gr.Image(interactive=False)
                     image_2_label = gr.Markdown("FreeU")
         
+        with gr.Group():
+            with gr.Row():
+                with gr.Column() as c3:
+                    feature_map_image = gr.Image(interactive=False)  # New component for feature map
+                    feature_map_label = gr.Markdown("Feature Map")
         
-    ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2], cache_examples=False)
+        
+    #ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2], cache_examples=False)
+    ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, feature_map_image], cache_examples=False)
     ex.dataset.headers = [""]
 
     text.submit(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2])
