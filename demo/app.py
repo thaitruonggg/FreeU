@@ -77,14 +77,29 @@ def generate_feature_map(image, method='mean'):
     return Image.fromarray(feature_map)  # Convert back to PIL Image
 '''
 
-def generate_feature_map(image):
-    # Convert image to numpy array for visualization
-    image_np = np.array(image)
+def generate_feature_map(latents):
+    """
+    Generate a feature map from the latents (noise) using a heatmap representation.
 
-    # Create a simple feature map visualization (e.g., using a heatmap)
-    feature_map = np.mean(image_np, axis=2)  # Example: average across color channels
-    feature_map = (feature_map - np.min(feature_map)) / (np.max(feature_map) - np.min(feature_map))  # Normalize
-    feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
+    Args:
+        latents (torch.Tensor): The latent representation from the encoder.
+
+    Returns:
+        PIL.Image: The generated feature map as a PIL image.
+    """
+    # Convert latents to numpy array for processing
+    latents_np = latents.detach().cpu().numpy()  # Ensure it's on CPU and convert to numpy
+
+    # Normalize the latents for visualization
+    latents_np = (latents_np - np.min(latents_np)) / (np.max(latents_np) - np.min(latents_np))  # Normalize
+    latents_np = (latents_np * 255).astype(np.uint8)  # Scale to 0-255
+
+    # If latents are 3D, take the first channel for visualization
+    if latents_np.ndim == 3:
+        latents_np = latents_np[0]  # Assuming the first dimension is the batch size
+
+    # Apply a color map to visualize the noise
+    feature_map = cv2.applyColorMap(latents_np, cv2.COLORMAP_JET)  # Use a color map
 
     return Image.fromarray(feature_map)
 
@@ -132,7 +147,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
     #feature_map = generate_feature_map(sd_image, method='heatmap')
-    feature_map = generate_feature_map(sd_image) #
+    feature_map = generate_feature_map(latents)
 
     # First SD, then freeu
     images = [sd_image, freeu_image, feature_map]
