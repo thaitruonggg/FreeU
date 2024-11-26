@@ -7,7 +7,6 @@ torch.cuda.empty_cache()
 from diffusers import StableDiffusionPipeline
 #from diffusers import DiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
-from diffusers import StableDiffusionPipeline, StableDiffusionPipelineOutput
 
 #Link: https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5
 model_id_15 = "stable-diffusion-v1-5/stable-diffusion-v1-5"
@@ -87,11 +86,8 @@ def generate_feature_map(latents):
     Returns:
         PIL.Image: The generated feature map as a PIL image.
     """
-    # Check if latents is a tensor
-    if isinstance(latents, torch.Tensor):
-        latents_np = latents.cpu().numpy()  # Ensure latents are on CPU
-    else:
-        raise ValueError("Expected latents to be a torch.Tensor, got: {}".format(type(latents)))
+    # Convert latents to numpy array
+    latents_np = latents.cpu().numpy()  # Ensure latents are on CPU
 
     # Average across channels (assuming latents are in shape [batch_size, channels, height, width])
     feature_map = np.mean(latents_np, axis=1)  # Average over channels
@@ -145,21 +141,10 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    # Generate SD image and capture latents
-    result = pip(prompt, num_inference_steps=25, return_latents=True)  # Get the result
+    latents = pip(prompt, num_inference_steps=25, return_latents=True)
 
-    # Check if result is of type StableDiffusionPipelineOutput
-    if isinstance(result, StableDiffusionPipelineOutput):
-        sd_image = result.images[0]  # Extract the generated image
-        latents = result.latents  # Extract the latents (if available)
-    else:
-        raise ValueError("Expected a StableDiffusionPipelineOutput, got: {}".format(type(result)))
-
-    # Generate feature map from latents
-    if latents is not None:
-        feature_map = generate_feature_map(latents)  # Use latents for feature map
-    else:
-        raise ValueError("Latents are not available in the output.")
+    # Generate feature map (example: using a simple method)
+    feature_map = generate_feature_map(latents)
 
     # First SD, then freeu
     images = [sd_image, freeu_image, feature_map]
