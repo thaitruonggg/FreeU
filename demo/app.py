@@ -1,6 +1,7 @@
 import gradio as gr
 import numpy as np
-from PIL import Image  
+from PIL import Image
+import cv2
 import torch
 torch.cuda.empty_cache()
 from diffusers import StableDiffusionPipeline
