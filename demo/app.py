@@ -40,6 +40,7 @@ sd_options_prev = None
 seed_prev = None 
 sd_image_prev = None
 
+'''
 def generate_feature_map(image, method='mean'):
     """
     Generate a feature map from the input image using the specified method.
@@ -74,7 +75,18 @@ def generate_feature_map(image, method='mean'):
     feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
 
     return Image.fromarray(feature_map)  # Convert back to PIL Image
+'''
 
+def generate_feature_map(image):
+    # Convert image to numpy array for visualization
+    image_np = np.array(image)
+
+    # Create a simple feature map visualization (e.g., using a heatmap)
+    feature_map = np.mean(image_np, axis=2)  # Example: average across color channels
+    feature_map = (feature_map - np.min(feature_map)) / (np.max(feature_map) - np.min(feature_map))  # Normalize
+    feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
+
+    return Image.fromarray(feature_map)
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global prompt_prev
@@ -119,9 +131,8 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-
-    # Generate feature map (example: using a simple method)
-    feature_map = generate_feature_map(sd_image, method='heatmap')
+    #feature_map = generate_feature_map(sd_image, method='heatmap')
+    feature_map = generate_feature_map(sd_image)
 
     # First SD, then freeu
     images = [sd_image, freeu_image, feature_map]
