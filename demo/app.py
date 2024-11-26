@@ -87,7 +87,7 @@ def generate_feature_map(latents):
         PIL.Image: The generated feature map as a PIL image.
     """
     # Convert latents to numpy array
-    latents_np = latents.cpu().numpy()  # Ensure latents are on CPU
+    latents_np = latents.numpy()  # Ensure latents are on CPU
 
     # Average across channels (assuming latents are in shape [batch_size, channels, height, width])
     feature_map = np.mean(latents_np, axis=1)  # Average over channels
