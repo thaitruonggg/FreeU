@@ -40,7 +40,7 @@ sd_options_prev = None
 seed_prev = None 
 sd_image_prev = None
 
-
+'''
 def generate_feature_map(image, method='mean', add_noise=False, noise_level=0.1):
     """
     Generate a feature map from the input image using the specified method.
@@ -80,9 +80,9 @@ def generate_feature_map(image, method='mean', add_noise=False, noise_level=0.1)
         feature_map = np.clip(feature_map, 0, 255).astype(np.uint8)  # Clip values to 0-255 range
 
     return Image.fromarray(feature_map)  # Convert back to PIL Image
-
 '''
-def generate_feature_map(latents):
+
+def generate_feature_map(latents_map):
     """
     Generate a feature map from the latents (noise) using a heatmap representation.
 
@@ -93,7 +93,7 @@ def generate_feature_map(latents):
         PIL.Image: The generated feature map as a PIL image.
     """
     # Convert latents to numpy array for processing
-    latents_np = latents.detach().cpu().numpy()  # Ensure it's on CPU and convert to numpy
+    latents_np = latents_map.detach().cpu().numpy()  # Ensure it's on CPU and convert to numpy
 
     # Normalize the latents for visualization
     latents_np = (latents_np - np.min(latents_np)) / (np.max(latents_np) - np.min(latents_np))  # Normalize
@@ -107,7 +107,7 @@ def generate_feature_map(latents):
     feature_map = cv2.applyColorMap(latents_np, cv2.COLORMAP_JET)  # Use a color map
 
     return Image.fromarray(feature_map)  # Convert back to PIL Image
-'''
+
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global prompt_prev
@@ -153,11 +153,11 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
     # Generate the image and capture latents
-    #output = pip(prompt, num_inference_steps=25, return_latents=True)
-    #sd_image = output.images[0]  # Get the generated image
-    #latents = output.latents  # Access the latents from the output
-    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=0.8)
-    #feature_map = generate_feature_map(latents)
+    output = pip(prompt, num_inference_steps=25, return_latents=True)
+    sd_image = output.images[0]  # Get the generated image
+    latents_map = output.latents_map  # Access the latents from the output
+    #feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=0.8)
+    feature_map = generate_feature_map(latents_map)
 
     # First SD, then freeu
     images = [sd_image, freeu_image, feature_map]
