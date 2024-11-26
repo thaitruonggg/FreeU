@@ -101,7 +101,7 @@ def generate_feature_map(latents):
     # Apply a color map to visualize the noise
     feature_map = cv2.applyColorMap(latents_np, cv2.COLORMAP_JET)  # Use a color map
 
-    return Image.fromarray(feature_map)
+    return Image.fromarray(feature_map)  # Convert back to PIL Image
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global prompt_prev
@@ -146,7 +146,10 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    latents = pip(prompt, num_inference_steps=25, return_latents=True)
+    # Generate the image and capture latents
+    output = pip(prompt, num_inference_steps=25, return_latents=True)
+    sd_image = output.images[0]  # Get the generated image
+    latents = output.latents  # Access the latents from the output
     #feature_map = generate_feature_map(sd_image, method='heatmap')
     feature_map = generate_feature_map(latents)
 
