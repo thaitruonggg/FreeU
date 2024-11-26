@@ -120,7 +120,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
 
     # Generate feature map (example: using a simple method)
-    feature_map = generate_feature_map(sd_image, method='heatmap')
+    feature_map = generate_feature_map(sd_image, method='mean')
 
     # First SD, then freeu
     images = [sd_image, freeu_image, feature_map]
