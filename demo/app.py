@@ -4,7 +4,7 @@ from PIL import Image
 import cv2
 import torch
 torch.cuda.empty_cache()
-from diffusers import StableDiffusionPipeline, StableDiffusionPipelineOutput
+from diffusers import StableDiffusionPipeline
 #from diffusers import DiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
@@ -39,7 +39,7 @@ prompt_prev = None
 sd_options_prev = None
 seed_prev = None 
 sd_image_prev = None
-'''
+
 def generate_feature_map(image, method='mean'):
     """
     Generate a feature map from the input image using the specified method.
@@ -74,29 +74,7 @@ def generate_feature_map(image, method='mean'):
     feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
 
     return Image.fromarray(feature_map)  # Convert back to PIL Image
-'''
 
-def generate_feature_map(latents):
-    """
-    Generate a feature map from the latent representation.
-
-    Args:
-        latents (torch.Tensor): The latent representation from the encoder.
-
-    Returns:
-        PIL.Image: The generated feature map as a PIL image.
-    """
-    # Convert latents to numpy array
-    latents_np = latents.cpu().numpy()  # Ensure latents are on CPU
-
-    # Average across channels (assuming latents are in shape [batch_size, channels, height, width])
-    feature_map = np.mean(latents_np, axis=1)  # Average over channels
-
-    # Normalize and scale
-    feature_map = (feature_map - np.min(feature_map)) / (np.max(feature_map) - np.min(feature_map))  # Normalize
-    feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
-
-    return Image.fromarray(feature_map)  # Convert back to PIL Image
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global prompt_prev
@@ -141,10 +119,9 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    latents = pip(prompt, num_inference_steps=25, return_latents=True)
 
     # Generate feature map (example: using a simple method)
-    feature_map = generate_feature_map(latents)
+    feature_map = generate_feature_map(sd_image, method='heatmap')
 
     # First SD, then freeu
     images = [sd_image, freeu_image, feature_map]
