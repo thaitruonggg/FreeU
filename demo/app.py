@@ -39,6 +39,40 @@ sd_options_prev = None
 seed_prev = None 
 sd_image_prev = None
 
+def generate_feature_map(image, method='mean'):
+    """
+    Generate a feature map from the input image using the specified method.
+
+    Args:
+        image (PIL.Image or np.ndarray): The input image from which to generate the feature map.
+        method (str): The method to use for generating the feature map ('mean', 'max', 'heatmap').
+
+    Returns:
+        PIL.Image: The generated feature map as a PIL image.
+    """
+    # Convert image to numpy array for processing
+    image_np = np.array(image)
+
+    if method == 'mean':
+        # Average across color channels
+        feature_map = np.mean(image_np, axis=2)
+    elif method == 'max':
+        # Max pooling across color channels
+        feature_map = np.max(image_np, axis=2)
+    elif method == 'heatmap':
+        # Create a heatmap based on the mean
+        feature_map = np.mean(image_np, axis=2)
+        feature_map = (feature_map - np.min(feature_map)) / (np.max(feature_map) - np.min(feature_map))  # Normalize
+        feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
+        feature_map = cv2.applyColorMap(feature_map, cv2.COLORMAP_JET)  # Apply heatmap color mapping
+    else:
+        raise ValueError("Unsupported method. Choose from 'mean', 'max', or 'heatmap'.")
+
+    # Normalize the feature map for visualization
+    feature_map = (feature_map - np.min(feature_map)) / (np.max(feature_map) - np.min(feature_map))  # Normalize
+    feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
+
+    return Image.fromarray(feature_map)  # Convert back to PIL Image
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global prompt_prev
@@ -83,14 +117,12 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    # Get the feature map
-    feature_map = pip.visualize_feature_maps(sd_image, layer_name="image_encoder", num_images=1)
 
-    # Convert the feature map to an image format suitable for Gradio
-    feature_map_image = feature_map[0]  # Assuming visualize_feature_maps returns a list of images
+    # Generate feature map (example: using a simple method)
+    feature_map = generate_feature_map(sd_image, method='heatmap')
 
     # First SD, then freeu
-    images = [sd_image, freeu_image, feature_map_image]
+    images = [sd_image, freeu_image, feature_map]
 
     return images
 
@@ -220,17 +252,19 @@ with block:
                     image_1_label = gr.Markdown("SD")
 
         with gr.Group():
-            with gr.Row():
-                with gr.Column() as c3:
-                    image_3 = gr.Image(interactive=False)
-                    image_3_label = gr.Markdown("Feature Map")
-            
-        with gr.Group():
             # btn = gr.Button("Generate image", scale=0)
             with gr.Row():
                 with gr.Column() as c2:
                     image_2 = gr.Image(interactive=False)
                     image_2_label = gr.Markdown("FreeU")
+
+        with gr.Group():
+            with gr.Row():
+                with gr.Column() as c3:
+                    image_3 = gr.Image(interactive=False)
+                    image_3_label = gr.Markdown("Feature Map")
+            
+        
 
     ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3], cache_examples=False)
     ex.dataset.headers = [""]
