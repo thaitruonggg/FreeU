@@ -156,7 +156,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     #output = pip(prompt, num_inference_steps=25, return_latents=True)
     #sd_image = output.images[0]  # Get the generated image
     #latents = output.latents  # Access the latents from the output
-    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=0.2)
+    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=0.8)
     #feature_map = generate_feature_map(latents)
 
     # First SD, then freeu
