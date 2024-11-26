@@ -75,6 +75,7 @@ def generate_feature_map(image, method='mean'):
 
     return Image.fromarray(feature_map)  # Convert back to PIL Image
 '''
+
 def generate_feature_map(latents):
     """
     Generate a feature map from the latent representation.
