@@ -125,7 +125,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=1.0)
+    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=2.0)
 
     # First SD, then freeu
     images = [sd_image, freeu_image, feature_map]
