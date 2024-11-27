@@ -107,7 +107,10 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
        
         torch.manual_seed(seed)
         print("Generating SD:")
-        sd_image, noisy_image = pip(prompt, num_inference_steps=25).images[0]
+        #sd_image, noisy_image = pip(prompt, num_inference_steps=25).images[0]
+        output = pip(prompt, num_inference_steps=25)  # Get the output object
+        sd_image = output.images[0]  # Access the denoised image
+        noisy_image = output.noisy_image
         sd_image_prev = sd_image
         '''
         # Refine the image if using SDXL
