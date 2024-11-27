@@ -40,7 +40,7 @@ sd_options_prev = None
 seed_prev = None 
 sd_image_prev = None
 
-'''
+
 def generate_feature_map(image, method='mean', add_noise=False, noise_level=0.1):
     """
     Generate a feature map from the input image using the specified method.
@@ -78,34 +78,6 @@ def generate_feature_map(image, method='mean', add_noise=False, noise_level=0.1)
         noise = np.random.normal(0, noise_level * 255, feature_map.shape)  # Generate Gaussian noise
         feature_map = feature_map.astype(np.float32) + noise  # Add noise to feature map
         feature_map = np.clip(feature_map, 0, 255).astype(np.uint8)  # Clip values to 0-255 range
-
-    return Image.fromarray(feature_map)  # Convert back to PIL Image
-
-'''
-
-def generate_feature_map(latents):
-    """
-    Generate a feature map from the latents (noise) using a heatmap representation.
-
-    Args:
-        latents (torch.Tensor): The latent representation from the encoder.
-
-    Returns:
-        PIL.Image: The generated feature map as a PIL image.
-    """
-    # Convert latents to numpy array for processing
-    latents_np = latents.detach().cpu().numpy()  # Ensure it's on CPU and convert to numpy
-
-    # Normalize the latents for visualization
-    latents_np = (latents_np - np.min(latents_np)) / (np.max(latents_np) - np.min(latents_np))  # Normalize
-    latents_np = (latents_np * 255).astype(np.uint8)  # Scale to 0-255
-
-    # If latents are 3D, take the first channel for visualization
-    if latents_np.ndim == 3:
-        latents_np = latents_np[0]  # Assuming the first dimension is the batch size
-
-    # Apply a color map to visualize the noise
-    feature_map = cv2.applyColorMap(latents_np, cv2.COLORMAP_JET)  # Use a color map
 
     return Image.fromarray(feature_map)  # Convert back to PIL Image
 
@@ -153,21 +125,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    # Generate the image and capture latents
-    output = pip(prompt, num_inference_steps=25, return_latents=True)
-
-    # Print the output to inspect its structure
-    print(output)  # Inspect the output structure
-
-    sd_image = output.images[0]  # Get the generated image
-    # Check if latents are available in the output
-    if hasattr(output, 'latents'):
-        latents = output.latents  # Access the latents from the output
-    else:
-        raise AttributeError("The output does not contain 'latents'.")
-    
-    #feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=0.8)
-    feature_map = generate_feature_map(latents)
+    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=1.0)
 
     # First SD, then freeu
     images = [sd_image, freeu_image, feature_map]
