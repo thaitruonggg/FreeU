@@ -128,10 +128,12 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     torch.manual_seed(seed)
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
-    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=1.2)
+    freeu_feature_map = freeu_image
+    freeu_feature_map = generate_feature_map(freeu_image, method='heatmap', add_noise=True, noise_level=1.1)
+    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=1.1)
 
     # First SD, then feature map, then freeu
-    images = [sd_image, feature_map, freeu_image]
+    images = [sd_image, feature_map, freeu_image, freeu_feature_map]
 
     return images
 
@@ -272,14 +274,20 @@ with block:
                 with gr.Column() as c3:
                     image_3 = gr.Image(interactive=False)
                     image_3_label = gr.Markdown("FreeU")
+
+        with gr.Group():
+            with gr.Row():
+                with gr.Column() as c4:
+                    image_4 = gr.Image(interactive=False)
+                    image_4_label = gr.Markdown("FreeU Feature Map")
             
         
 
-    ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3], cache_examples=False)
+    ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3, image_4], cache_examples=False)
     ex.dataset.headers = [""]
 
-    text.submit(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3])
-    btn.click(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3])
+    text.submit(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3, image_4])
+    btn.click(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3, image_4])
 
 # block.launch()
 # block.queue(default_enabled=False).launch(share=False)
