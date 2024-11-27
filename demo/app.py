@@ -164,7 +164,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     if hasattr(output, 'latents'):
         latents = output.latents  # Access the latents from the output
     else:
-        raise AttributeError("The output does not contain 'latents'.")#
+        raise AttributeError("The output does not contain 'latents'.")
     
     #feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=0.8)
     feature_map = generate_feature_map(latents)
