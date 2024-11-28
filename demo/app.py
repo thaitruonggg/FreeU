@@ -250,7 +250,7 @@ with block:
                 
                 seed = gr.Slider(label='seed',
                              minimum=0,
-                             maximum=1000,
+                             maximum=500,
                              step=1,
                              value=42)
                     
@@ -267,7 +267,7 @@ with block:
             with gr.Row():
                 with gr.Column() as c2:
                     image_2 = gr.Image(interactive=False)
-                    image_2_label = gr.Markdown("Feature Map")
+                    image_2_label = gr.Markdown("Feature Map (SD without FreeU)")
 
         with gr.Group():
             with gr.Row():
@@ -279,7 +279,7 @@ with block:
             with gr.Row():
                 with gr.Column() as c4:
                     image_4 = gr.Image(interactive=False)
-                    image_4_label = gr.Markdown("FreeU Feature Map")
+                    image_4_label = gr.Markdown("Feature Map (SD with FreeU)")
             
         
 
