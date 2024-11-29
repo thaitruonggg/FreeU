@@ -41,7 +41,7 @@ seed_prev = None
 sd_image_prev = None
 
 
-def generate_feature_map(image, method='mean', add_noise=False, noise_level=0.1):
+def generate_feature_map(image, method='mean', add_noise=False):
     """
     Generate a feature map from the input image using the specified method.
 
@@ -75,11 +75,12 @@ def generate_feature_map(image, method='mean', add_noise=False, noise_level=0.1)
     feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
 
     if add_noise:
-        noise = np.random.normal(0, noise_level * 255, feature_map.shape)  # Generate Gaussian noise
-        feature_map = feature_map.astype(np.float32) + noise  # Add noise to feature map
-        feature_map = np.clip(feature_map, 0, 255).astype(np.uint8)  # Clip values to 0-255 range
+        noise_level= 0.8
+        noise = np.random.normal(0, noise_level * 255, feature_map.shape)
+        feature_map = feature_map.astype(np.float32) + noise 
+        feature_map = np.clip(feature_map, 0, 255).astype(np.uint8)
 
-    return Image.fromarray(feature_map)  # Convert back to PIL Image
+    return Image.fromarray(feature_map) 
 
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
@@ -129,8 +130,8 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
     freeu_feature_map = freeu_image
-    freeu_feature_map = generate_feature_map(freeu_image, method='heatmap', add_noise=True, noise_level=0.8)
-    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True, noise_level=0.8)
+    freeu_feature_map = generate_feature_map(freeu_image, method='heatmap', add_noise=True)
+    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True)
 
     # First SD, then feature map, then freeu
     images = [sd_image, feature_map, freeu_image, freeu_feature_map]
