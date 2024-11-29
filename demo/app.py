@@ -123,7 +123,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     # First SD, then Feature map (SD without FreeU), then Freeu, then Feature map (SD with FreeU)
     images = [sd_image, feature_map, freeu_image, freeu_feature_map]
 
-    return images
+    return images #
 
 examples = [
     [
