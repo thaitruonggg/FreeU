@@ -40,8 +40,8 @@ sd_options_prev = None
 seed_prev = None 
 sd_image_prev = None
 
-'''
-def generate_feature_map(image, method='mean', add_noise=False):
+
+def generate_feature_map(image):
     """
     Generate a feature map from the input image using the specified method.
 
@@ -55,33 +55,22 @@ def generate_feature_map(image, method='mean', add_noise=False):
     # Convert image to numpy array for processing
     image_np = np.array(image)
 
-    if method == 'mean':
-        # Average across color channels
-        feature_map = np.mean(image_np, axis=2)
-    elif method == 'max':
-        # Max pooling across color channels
-        feature_map = np.max(image_np, axis=2)
-    elif method == 'heatmap':
-        # Create a heatmap based on the mean
-        feature_map = np.mean(image_np, axis=2)
-        feature_map = (feature_map - np.min(feature_map)) / (np.max(feature_map) - np.min(feature_map))  # Normalize
-        feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
-        feature_map = cv2.applyColorMap(feature_map, cv2.COLORMAP_JET)  # Apply heatmap color mapping
-    else:
-        raise ValueError("Unsupported method. Choose from 'mean', 'max', or 'heatmap'.")
+    feature_map = np.mean(image_np, axis=2)
+    feature_map = (feature_map - np.min(feature_map)) / (np.max(feature_map) - np.min(feature_map))
+    feature_map = (feature_map * 255).astype(np.uint8)
+    feature_map = cv2.applyColorMap(feature_map, cv2.COLORMAP_JET)
 
     # Normalize the feature map for visualization
-    feature_map = (feature_map - np.min(feature_map)) / (np.max(feature_map) - np.min(feature_map))  # Normalize
+    feature_map = (feature_map - np.min(feature_map)) / (np.max(feature_map) - np.min(feature_map))
     feature_map = (feature_map * 255).astype(np.uint8)  # Scale to 0-255
 
-    if add_noise:
-        noise_level= 0.8
-        noise = np.random.normal(0, noise_level * 255, feature_map.shape)
-        feature_map = feature_map.astype(np.float32) + noise 
-        feature_map = np.clip(feature_map, 0, 255).astype(np.uint8)
+    noise_level= 0.8
+    noise = np.random.normal(0, noise_level * 255, feature_map.shape)
+    feature_map = feature_map.astype(np.float32) + noise 
+    feature_map = np.clip(feature_map, 0, 255).astype(np.uint8)
 
     return Image.fromarray(feature_map) 
-'''
+
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global prompt_prev
@@ -127,8 +116,10 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
     freeu_feature_map = freeu_image
-    freeu_feature_map = pip.generate_feature_map(freeu_image, method='heatmap')
-    feature_map = pip.generate_feature_map(sd_image, method='heatmap')
+    freeu_feature_map = generate_feature_map(freeu_image)
+    feature_map = generate_feature_map(sd_image)
+    #freeu_feature_map = pip.generate_feature_map(freeu_image, method='heatmap')
+    #feature_map = pip.generate_feature_map(sd_image, method='heatmap')
 
     # First SD, then feature map, then freeu, then freeu feature map
     images = [sd_image, feature_map, freeu_image, freeu_feature_map]
@@ -137,7 +128,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
 
 examples = [
     [
-        "A drone  view of celebration with Christma tree and fireworks, starry sky - background.",
+        "A drone view of celebration with Christma tree and fireworks, starry sky - background.",
     ],
     [
         "happy dog wearing a yellow turtleneck, studio, portrait, facing camera, studio, dark bg"
