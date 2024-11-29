@@ -5,7 +5,7 @@ import cv2
 import torch
 torch.cuda.empty_cache()
 from diffusers import StableDiffusionPipeline
-#from diffusers import DiffusionPipeline
+from diffusers import DiffusionPipeline
 from free_lunch_utils import register_free_upblock2d, register_free_crossattn_upblock2d
 
 #Link: https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5
@@ -18,7 +18,6 @@ model_id_21 = "stabilityai/stable-diffusion-2-1"
 pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id_21, torch_dtype=torch.float16)
 pip_2_1 = pip_2_1.to("cuda")
 
-'''
 #Link: https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0
 base = DiffusionPipeline.from_pretrained(
     "stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, variant="fp16", use_safetensors=True
@@ -33,7 +32,6 @@ refiner = DiffusionPipeline.from_pretrained(
     variant="fp16",
 )
 refiner.to("cuda")
-'''
 
 prompt_prev = None
 sd_options_prev = None
@@ -81,8 +79,10 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     # Select the pipeline based on sd_options
     if sd_options == 'SD1.5':
          pip = pip_1_5
-    else:
+    elif sd_options == 'SD2.1':
          pip = pip_2_1
+    else:
+        pip = base
 
     run_baseline = False
     if prompt != prompt_prev or sd_options != sd_options_prev or seed != seed_prev:
@@ -99,12 +99,12 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
         print("Generating SD:")
         sd_image = pip(prompt, num_inference_steps=25).images[0]
         sd_image_prev = sd_image
-        '''
+        
         # Refine the image if using SDXL
         if sd_options == 'SDXL':
             sd_image = refiner(prompt, image=sd_image, num_inference_steps=25).images[0]
         sd_image_prev = sd_image
-        '''
+        
     else:
         sd_image = sd_image_prev
     
@@ -115,15 +115,15 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
     freeu_feature_map = freeu_image
-    #freeu_feature_map = generate_feature_map(freeu_image)
-    #feature_map = generate_feature_map(sd_image)
-    freeu_feature_map = pip.generate_feature_map(freeu_image)
-    feature_map = pip.generate_feature_map(sd_image)
+    freeu_feature_map = generate_feature_map(freeu_image)
+    feature_map = generate_feature_map(sd_image)
+    #freeu_feature_map = pip.generate_feature_map(freeu_image)
+    #feature_map = pip.generate_feature_map(sd_image)
 
     # First SD, then Feature map (SD without FreeU), then Freeu, then Feature map (SD with FreeU)
     images = [sd_image, feature_map, freeu_image, freeu_feature_map]
 
-    return images #
+    return images
 
 examples = [
     [
@@ -206,8 +206,7 @@ with block:
                     )
             btn = gr.Button("Generate image", scale=0)
         with gr.Row():             
-            sd_options = gr.Dropdown(["SD1.5","SD2.1"], label="SD options", value="SD2.1", visible=True)
-        
+            sd_options = gr.Dropdown(["SD1.5","SD2.1", "SDXL"], label="SD options", value="SD2.1", visible=True)
     
     with gr.Group():
         with gr.Row():
@@ -268,15 +267,11 @@ with block:
                     image_4 = gr.Image(interactive=False)
                     image_4_label = gr.Markdown("Feature Map (SD with FreeU)")
             
-        
-
     ex = gr.Examples(examples=examples, fn=infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3, image_4], cache_examples=False)
     ex.dataset.headers = [""]
 
     text.submit(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3, image_4])
     btn.click(infer, inputs=[text, sd_options, seed, b1, b2, s1, s2], outputs=[image_1, image_2, image_3, image_4])
 
-# block.launch()
-# block.queue(default_enabled=False).launch(share=False)
 block.launch(share=True, debug=True)
 # block.queue(default_enabled=False).launch(share=True)
