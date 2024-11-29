@@ -18,7 +18,7 @@ model_id_21 = "stabilityai/stable-diffusion-2-1"
 pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id_21, torch_dtype=torch.float16)
 pip_2_1 = pip_2_1.to("cuda")
 
-'''
+''' Remove to use SDXL
 #Link: https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0
 base = DiffusionPipeline.from_pretrained(
     "stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, variant="fp16", use_safetensors=True
@@ -39,7 +39,6 @@ prompt_prev = None
 sd_options_prev = None
 seed_prev = None 
 sd_image_prev = None
-
 
 def generate_feature_map(image):
     """
@@ -70,7 +69,6 @@ def generate_feature_map(image):
     feature_map = np.clip(feature_map, 0, 255).astype(np.uint8)
 
     return Image.fromarray(feature_map) 
-
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global prompt_prev
