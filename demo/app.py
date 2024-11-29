@@ -107,7 +107,6 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
         '''
     else:
         sd_image = sd_image_prev
-
     
     register_free_upblock2d(pip, b1=b1, b2=b2, s1=s1, s2=s1)
     register_free_crossattn_upblock2d(pip, b1=b1, b2=b2, s1=s1, s2=s1)
@@ -116,12 +115,12 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
     freeu_feature_map = freeu_image
-    freeu_feature_map = generate_feature_map(freeu_image)
-    feature_map = generate_feature_map(sd_image)
-    #freeu_feature_map = pip.generate_feature_map(freeu_image, method='heatmap')
-    #feature_map = pip.generate_feature_map(sd_image, method='heatmap')
+    #freeu_feature_map = generate_feature_map(freeu_image)
+    #feature_map = generate_feature_map(sd_image)
+    freeu_feature_map = pip.generate_feature_map(freeu_image)
+    feature_map = pip.generate_feature_map(sd_image)
 
-    # First SD, then feature map, then freeu, then freeu feature map
+    # First SD, then Feature map (SD without FreeU), then Freeu, then Feature map (SD with FreeU)
     images = [sd_image, feature_map, freeu_image, freeu_feature_map]
 
     return images
@@ -179,7 +178,6 @@ examples = [
         "a drone flying over a snowy forest."
     ],
 ]
-    
     
 css = """
 h1 {
