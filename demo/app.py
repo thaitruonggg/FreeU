@@ -127,8 +127,8 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
     freeu_feature_map = freeu_image
-    freeu_feature_map = pip.generate_feature_map(freeu_image, method='heatmap', add_noise=True)
-    feature_map = pip.generate_feature_map(sd_image, method='heatmap', add_noise=True)
+    freeu_feature_map = pip.generate_feature_map(freeu_image, method='heatmap')
+    feature_map = pip.generate_feature_map(sd_image, method='heatmap')
 
     # First SD, then feature map, then freeu
     images = [sd_image, feature_map, freeu_image, freeu_feature_map]
