@@ -18,6 +18,7 @@ model_id_21 = "stabilityai/stable-diffusion-2-1"
 pip_2_1 = StableDiffusionPipeline.from_pretrained(model_id_21, torch_dtype=torch.float16)
 pip_2_1 = pip_2_1.to("cuda")
 
+'''
 #Link: https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0
 base = DiffusionPipeline.from_pretrained(
     "stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, variant="fp16", use_safetensors=True
@@ -32,6 +33,7 @@ refiner = DiffusionPipeline.from_pretrained(
     variant="fp16",
 )
 refiner.to("cuda")
+'''
 
 prompt_prev = None
 sd_options_prev = None
@@ -79,10 +81,8 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     # Select the pipeline based on sd_options
     if sd_options == 'SD1.5':
          pip = pip_1_5
-    elif sd_options == 'SD2.1':
-         pip = pip_2_1
     else:
-        pip = base
+         pip = pip_2_1
 
     run_baseline = False
     if prompt != prompt_prev or sd_options != sd_options_prev or seed != seed_prev:
@@ -206,7 +206,7 @@ with block:
                     )
             btn = gr.Button("Generate image", scale=0)
         with gr.Row():             
-            sd_options = gr.Dropdown(["SD1.5","SD2.1", "SDXL"], label="SD options", value="SD2.1", visible=True)
+            sd_options = gr.Dropdown(["SD1.5","SD2.1"], label="SD options", value="SD2.1", visible=True)
     
     with gr.Group():
         with gr.Row():
