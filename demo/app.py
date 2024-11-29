@@ -130,7 +130,7 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     freeu_feature_map = pip.generate_feature_map(freeu_image, method='heatmap')
     feature_map = pip.generate_feature_map(sd_image, method='heatmap')
 
-    # First SD, then feature map, then freeu
+    # First SD, then feature map, then freeu, then freeu feature map
     images = [sd_image, feature_map, freeu_image, freeu_feature_map]
 
     return images
