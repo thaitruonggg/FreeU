@@ -40,7 +40,7 @@ sd_options_prev = None
 seed_prev = None 
 sd_image_prev = None
 
-
+'''
 def generate_feature_map(image, method='mean', add_noise=False):
     """
     Generate a feature map from the input image using the specified method.
@@ -81,7 +81,7 @@ def generate_feature_map(image, method='mean', add_noise=False):
         feature_map = np.clip(feature_map, 0, 255).astype(np.uint8)
 
     return Image.fromarray(feature_map) 
-
+'''
 
 def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     global prompt_prev
@@ -110,9 +110,6 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
         print("Generating SD:")
         sd_image = pip(prompt, num_inference_steps=25).images[0]
         sd_image_prev = sd_image
-
-        # Get the image before denoising
-        image_before_denoise = sd_image
         '''
         # Refine the image if using SDXL
         if sd_options == 'SDXL':
@@ -130,8 +127,8 @@ def infer(prompt, sd_options, seed, b1, b2, s1, s2):
     print("Generating FreeU:")
     freeu_image = pip(prompt, num_inference_steps=25).images[0]
     freeu_feature_map = freeu_image
-    freeu_feature_map = generate_feature_map(freeu_image, method='heatmap', add_noise=True)
-    feature_map = generate_feature_map(sd_image, method='heatmap', add_noise=True)
+    freeu_feature_map = pip.generate_feature_map(freeu_image, method='heatmap', add_noise=True)
+    feature_map = pip.generate_feature_map(sd_image, method='heatmap', add_noise=True)
 
     # First SD, then feature map, then freeu
     images = [sd_image, feature_map, freeu_image, freeu_feature_map]
